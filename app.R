@@ -7,8 +7,8 @@ library(bslib)
 
 path_to_file <-  here::here("RefEx_expression_EST10_human.tsv")
 
-# Load the data from the excel file
-Database <- read.delim(path_to_file)
+# Load the data from the file
+Database <- read.delim(path_to_file, row.names = 1)
 
 # Define UI for application
 ui <- fluidPage(
@@ -16,8 +16,8 @@ ui <- fluidPage(
 	theme = bs_theme(
 		bootswatch = "minty"
 	), 
-	# Favicon
-	tags$head(tags$link(rel="shortcut icon", href=here::here("www", "favicon.ico"), type="image/x-icon")),
+	# # Favicon
+	# tags$head(tags$link(rel="shortcut icon", href=here::here("www", "favicon.ico"), type="image/x-icon")),
 	# Application title
 	titlePanel("RefEx_expression_EST10_human"), 
 	# The data table
