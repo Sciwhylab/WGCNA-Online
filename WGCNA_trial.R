@@ -6,8 +6,8 @@ options(stringsAsFactors = FALSE);
 enableWGCNAThreads()
 
 # Load the data from the file
-# path_to_file <-  here::here("RefEx_expression_EST10_human.tsv")
-# Database <- read.delim(path_to_file, row.names = 1)
+path_to_file <-  here::here("RefEx_expression_EST10_human.tsv")
+Database <- read.delim(path_to_file, row.names = 1)
 
 # load("oed.RData")
 # Database <- oed
