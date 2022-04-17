@@ -5,6 +5,11 @@ library(DT)
 library(bslib)
 # library(dplyr)
 
+# This sets the application-scoped cache to be a disk
+# cache that can be shared among multiple concurrent R processes, and is
+# deleted when the system reboots.
+shinyOptions(cache = cachem::cache_disk(file.path(dirname(tempdir()), "WGCNA-cache")))
+
 path_to_file <-  here::here("RefEx_expression_EST10_human.tsv")
 
 # Load the data from the file
@@ -19,8 +24,8 @@ ui <- fluidPage(
 	# Application title
 	titlePanel("WGCNA Analysis"),
 	# The data table
-	h1("Dataset"),
-	DTOutput("GeneTable"),
+	h2("Dataset"),
+	# DTOutput("GeneTable"),
 	
 	WGCNAShinyUI("1")
 )
