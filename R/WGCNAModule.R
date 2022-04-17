@@ -14,6 +14,16 @@ WGCNAShinyUI <- function(id) {
 	ns <- NS(id)
 	
 	tagList(
+		h1("Analysis"),
+		sliderInput(
+			ns("NoOfSamples"),
+			label = "Sample Size",
+			value = 500,
+			min = 100,
+			max = 10000,
+			step = 100,
+			width = "100%"
+		),
 		h2("Outlier Detection"),
 		numericInput(ns("cutHeight"), label = "Cut Height", value = 10),
 		plotOutput(ns("OutlierDetectionPlot")),
@@ -26,7 +36,10 @@ WGCNAShinyUI <- function(id) {
 			value = 0.1,
 			step = 0.05
 		),
-		plotOutput(ns("ScaleIndependencePlot"))
+		plotOutput(ns("ScaleIndependencePlot")),
+		plotOutput(ns("MeanConnectivityPlot")),
+		h2("Dendrogram and the Module Colours"),
+		plotOutput(ns("ColouredDendrogramPlot"))
 	)
 }
 
@@ -45,24 +58,31 @@ WGCNAShiny <- function(id) {
 				 	names(datExpr)
 				 	
 				 	
-				 	datExpr = as.data.frame(lapply(datExpr, as.numeric))
+				 	datExpr <- as.data.frame(lapply(datExpr, as.numeric))
 				 	datExpr <- na.omit(datExpr)
 				 	# Normalization with log2
-				 	datExpr = log2(datExpr)
+				 	datExpr <- log2(datExpr)
 				 	
 				 	head(datExpr[1:5, 1:5]) # samples in row, genes in column
 				 	
 				 	
-				 	n = 1000
+				 	n = reactive({
+				 		input$NoOfSamples
+				 	})
 				 	
-				 	datExpr0 = t(datExpr)[, 1:n]
-				 	datExpr0 = datExpr[1:n,]
-				 	sampleTree = hclust(dist(datExpr0), method = "average")
+				 	# datExpr0 <- reactive({
+				 	# 	t(datExpr)[, 1:n()]
+				 	# })
+				 	datExpr0 <- datExpr[1:1000,]
+				 	sampleTree <-
+				 		reactive({
+				 			hclust(dist(datExpr0), method = "average")
+				 		})
 				 	
-				 	# sampleTree = hclust(dist(datExpr[1:n,]), method = "average");
+				 	# sampleTree = hclust(dist(datExpr[1:n(),]), method = "average");
 				 	
 				 	#####################
-				 	dend <- sampleTree %>% as.dendrogram() %>% color_branches(3)
+				 	# dend <- sampleTree %>% as.dendrogram() %>% color_branches(3)
 				 	# ggplotly(p)
 				 	# output$OutlierDetectionPlot <- renderPlot(p)
 				 	#####################
@@ -75,7 +95,7 @@ WGCNAShiny <- function(id) {
 				 		
 				 		par(mar = c(0, 4, 2, 0))
 				 		plot(
-				 			sampleTree,
+				 			sampleTree(),
 				 			main = "Sample clustering to detect outliers",
 				 			sub = "",
 				 			xlab = "",
@@ -87,13 +107,13 @@ WGCNAShiny <- function(id) {
 				 		abline(h = cutHeight(), col = "red")
 				 	},
 				 	cacheKeyExpr = {
-				 		list(sampleTree, cutHeight())
+				 		list(sampleTree(), cutHeight())
 				 	})
 				 	
 				 	# Determine cluster under the line
 				 	clust <-
 				 		reactive({
-				 			(cutreeStatic(sampleTree, cutHeight(), minSize = ceiling(n * 0.05)))
+				 			cutreeStatic(sampleTree(), cutHeight(), minSize = ceiling(n() * 0.05))
 				 		})
 				 	# table(clust())
 				 	# clust 1 contains the samples we want to keep.
@@ -132,7 +152,7 @@ WGCNAShiny <- function(id) {
 				 	# nSamples = nrow(datExpr)
 				 	
 				 	# Choose a set of soft-thresholding powers
-				 	powers = c(c(1:10), seq(
+				 	powers <- c(c(1:10), seq(
 				 		from = 12,
 				 		to = 20,
 				 		by = 2
@@ -142,18 +162,16 @@ WGCNAShiny <- function(id) {
 				 		pickSoftThreshold(datExpr(),
 				 						  powerVector = powers,
 				 						  verbose = 5)
-				 	}) %>% bindCache({
-				 		list(datExpr(), powers)
+				 		# }) %>% bindCache({
+				 		# 	list(datExpr(), powers)
 				 	})
 				 	# sft = pickSoftThreshold(datExpr)
-				 	# Plot the results:
-				 	# sizeGrWindow(9, 5)
+				 	
+				 	# Scale-free topology fit index as a function of the soft-thresholding power
 				 	output$ScaleIndependencePlot <- renderCachedPlot({
+				 		cex1 <- 0.9
 				 		par(mfrow = c(1, 2))
 				 		
-				 		cex1 = 0.9
-				 		
-				 		# Scale-free topology fit index as a function of the soft-thresholding power
 				 		plot(
 				 			sft()$fitIndices[, 1],-sign(sft()$fitIndices[, 3]) * sft()$fitIndices[, 2],
 				 			xlab = "Soft Threshold (power)",
@@ -177,51 +195,71 @@ WGCNAShiny <- function(id) {
 				 	cacheKeyExpr = {
 				 		list(sft(), powers, input$h)
 				 	})
-				 	# # Mean connectivity as a function of the soft-thresholding power
-				 	# plot(
-				 	# 	sft$fitIndices[, 1],
-				 	# 	sft$fitIndices[, 5],
-				 	# 	xlab = "Soft Threshold (power)",
-				 	# 	ylab = "Mean Connectivity",
-				 	# 	type = "n",
-				 	# 	main = paste("Mean connectivity")
-				 	# )
-				 	# text(
-				 	# 	sft$fitIndices[, 1],
-				 	# 	sft$fitIndices[, 5],
-				 	# 	labels = powers,
-				 	# 	cex = cex1,
-				 	# 	col = "red"
-				 	# )
-				 	# net = blockwiseModules(
-				 	# 	datExpr,
-				 	# 	power = 10,
-				 	# 	deepSplit = 2,
-				 	# 	TOMType = "unsigned",
-				 	# 	minModuleSize = 30,
-				 	# 	reassignThreshold = 0,
-				 	# 	mergeCutHeight = 0.25,
-				 	# 	numericLabels = TRUE,
-				 	# 	pamRespectsDendro = FALSE,
-				 	# 	saveTOMs = TRUE,
-				 	# 	saveTOMFileBase = "humanTOM",
-				 	# 	verbose = 3
-				 	# )
+				 	
+				 	# Mean connectivity as a function of the soft-thresholding power
+				 	output$MeanConnectivityPlot <- renderCachedPlot({
+				 		cex1 <- 0.9
+				 		par(mfrow = c(1, 2))
+				 		
+				 		plot(
+				 			sft()$fitIndices[, 1],
+				 			sft()$fitIndices[, 5],
+				 			xlab = "Soft Threshold (power)",
+				 			ylab = "Mean Connectivity",
+				 			type = "n",
+				 			main = paste("Mean connectivity")
+				 		)
+				 		text(
+				 			sft()$fitIndices[, 1],
+				 			sft()$fitIndices[, 5],
+				 			labels = powers,
+				 			cex = cex1,
+				 			col = "red"
+				 		)
+				 	},
+				 	cacheKeyExpr = {
+				 		list(sft(), powers)
+				 	})
+				 	
+				 	net = reactive({
+				 		blockwiseModules(
+				 			datExpr(),
+				 			power = 4,
+				 			deepSplit = 4,
+				 			TOMType = "unsigned",
+				 			minModuleSize = 10,
+				 			reassignThreshold = 0,
+				 			mergeCutHeight = 0.10,
+				 			numericLabels = TRUE,
+				 			pamRespectsDendro = FALSE,
+				 			# saveTOMs = TRUE,
+				 			# saveTOMFileBase = "humanTOM",
+				 			verbose = 3
+				 		)
+				 	}) %>% bindCache(datExpr(), cache = cachem::cache_disk())
+				 	
 				 	# table(net$colors)
 				 	# # open a graphics window
 				 	# # sizeGrWindow(12, 9)
-				 	# # Convert labels to colors for plotting
-				 	# mergedColors = labels2colors(net$colors)
-				 	# # Plot the dendrogram and the module colors underneath
-				 	# plotDendroAndColors(
-				 	# 	net$dendrograms[[1]],
-				 	# 	mergedColors[net$blockGenes[[1]]],
-				 	# 	"Module colors",
-				 	# 	dendroLabels = FALSE,
-				 	# 	hang = 0.03,
-				 	# 	addGuide = TRUE,
-				 	# 	guideHang = 0.05
-				 	# )
+				 	# Convert labels to colors for plotting
+				 	mergedColors <- reactive({
+				 		labels2colors(net()$colors)
+				 	})
+				 	# Plot the dendrogram and the module colours underneath
+				 	output$ColouredDendrogramPlot <- renderCachedPlot({
+				 		plotDendroAndColors(
+				 			net()$dendrograms[[1]],
+				 			mergedColors()[net()$blockGenes[[1]]],
+				 			"Module colors",
+				 			dendroLabels = FALSE,
+				 			hang = 0.03,
+				 			addGuide = TRUE,
+				 			guideHang = 0.05
+				 		)
+				 	},
+				 	cacheKeyExpr = {
+				 		list(net(), mergedColors())
+				 	})
 				 	# moduleLabels = net$colors
 				 	# moduleColors = labels2colors(net$colors)
 				 	# MEs = net$MEs
