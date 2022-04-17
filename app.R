@@ -18,9 +18,9 @@ Database <- read.delim(path_to_file, row.names = 1)
 # Define UI for application
 ui <- fluidPage(
 	# Theme
-	theme = bs_theme(bootswatch = "minty"),
-	# # Favicon
-	# tags$head(tags$link(rel="shortcut icon", href=here::here("www", "favicon.ico"), type="image/x-icon")),
+	theme = bs_theme(bootswatch = "flatly"),
+	# Favicon
+	tags$head(tags$link(rel="shortcut icon", href=here::here("www","favicon.ico"), type="image/x-icon")),
 	# Application title
 	titlePanel("WGCNA Analysis"),
 	# The data table
