@@ -20,7 +20,12 @@ WGCNAShinyUI <- function(id) {
 		h2("Sample dendrogram and trait heatmap"),
 		plotOutput(ns("DendroAndColorsPlot")),
 		h2("Soft-thresholding"),
-		numericInput(ns("h"), label = "h for R^2 cut-off", value = 0.1, step = 0.05),
+		numericInput(
+			ns("h"),
+			label = "h for R^2 cut-off",
+			value = 0.1,
+			step = 0.05
+		),
 		plotOutput(ns("ScaleIndependencePlot"))
 	)
 }
@@ -81,8 +86,9 @@ WGCNAShiny <- function(id) {
 				 		# Plot a line to show the cut
 				 		abline(h = cutHeight(), col = "red")
 				 	},
-				 	cacheKeyExpr = {list(sampleTree, cutHeight())}
-				 	)
+				 	cacheKeyExpr = {
+				 		list(sampleTree, cutHeight())
+				 	})
 				 	
 				 	# Determine cluster under the line
 				 	clust <-
@@ -117,8 +123,9 @@ WGCNAShiny <- function(id) {
 				 			main = "Sample dendrogram and trait heatmap"
 				 		)
 				 	},
-				 	cacheKeyExpr = {list(sampleTree2(), traitColors(), names(datExpr()))}
-				 	)
+				 	cacheKeyExpr = {
+				 		list(sampleTree2(), traitColors(), names(datExpr()))
+				 	})
 				 	
 				 	# datExpr = t(datExpr)
 				 	# nGenes = ncol(datExpr)
@@ -135,11 +142,13 @@ WGCNAShiny <- function(id) {
 				 		pickSoftThreshold(datExpr(),
 				 						  powerVector = powers,
 				 						  verbose = 5)
+				 	}) %>% bindCache({
+				 		list(datExpr(), powers)
 				 	})
 				 	# sft = pickSoftThreshold(datExpr)
 				 	# Plot the results:
 				 	# sizeGrWindow(9, 5)
-				 	output$ScaleIndependencePlot <- renderPlot({
+				 	output$ScaleIndependencePlot <- renderCachedPlot({
 				 		par(mfrow = c(1, 2))
 				 		
 				 		cex1 = 0.9
@@ -164,6 +173,9 @@ WGCNAShiny <- function(id) {
 				 		# this line corresponds to using an R^2 cut-off of h
 				 		abline(h = input$h, col = "red")
 				 		
+				 	},
+				 	cacheKeyExpr = {
+				 		list(sft(), powers, input$h)
 				 	})
 				 	# # Mean connectivity as a function of the soft-thresholding power
 				 	# plot(

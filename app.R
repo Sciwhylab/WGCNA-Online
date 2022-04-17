@@ -25,7 +25,7 @@ ui <- fluidPage(
 	titlePanel("WGCNA Analysis"),
 	# The data table
 	h2("Dataset"),
-	# DTOutput("GeneTable"),
+	DTOutput("GeneTable"),
 	
 	WGCNAShinyUI("1")
 )
