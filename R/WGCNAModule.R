@@ -30,16 +30,21 @@ WGCNAShinyUI <- function(id) {
 		h2("Sample dendrogram and trait heatmap"),
 		plotOutput(ns("DendroAndColorsPlot")),
 		h2("Soft-thresholding"),
-		numericInput(
-			ns("h"),
-			label = "h for R^2 cut-off",
-			value = 0.1,
-			step = 0.05
-		),
+		# numericInput(
+		# 	ns("h"),
+		# 	label = "h for R^2 cut-off",
+		# 	value = 0.1,
+		# 	step = 0.05
+		# ),
+		selectInput(ns("power"),
+					label = "Power for R^2 cut-off",
+					choices = list(1)),
 		plotOutput(ns("ScaleIndependencePlot")),
 		plotOutput(ns("MeanConnectivityPlot")),
 		h2("Dendrogram and the Module Colours"),
-		plotOutput(ns("ColouredDendrogramPlot"))
+		plotOutput(ns("ColouredDendrogramPlot")),
+		h2("Network heatmap plot, all genes"),
+		plotOutput(ns("NetworkHeatmapPlot"))
 	)
 }
 
@@ -53,8 +58,8 @@ WGCNAShiny <- function(id) {
 				 	datExpr1 <- read.delim(path_to_file, row.names = 1)
 				 	# Replace -1 by NA
 				 	datExpr1[datExpr1 == '-1'] <- NA
-				 	dim(datExpr1)
-				 	names(datExpr1)
+				 	# dim(datExpr1)
+				 	# names(datExpr1)
 				 	# View(datExpr1)
 				 	
 				 	datExpr1 <- as.data.frame(lapply(datExpr1, as.numeric))
@@ -148,11 +153,14 @@ WGCNAShiny <- function(id) {
 				 		list(sampleTree2(), traitColors(), names(datExpr()))
 				 	})
 				 	
-				 	datExpr <- reactive({
+				 	datExpr3 <- reactive({
 				 		t(datExpr())
 				 	})
-				 	# nGenes = ncol(datExpr)
-				 	# nSamples = nrow(datExpr)
+				 	# datExpr <- reactive({
+				 	# 	t(datExpr0()[keepSamples(), ])
+				 	# })
+				 	# nGenes = ncol(datExpr3)
+				 	# nSamples = nrow(datExpr3)
 				 	
 				 	# Choose a set of soft-thresholding powers
 				 	powers <- c(c(1:10), seq(
@@ -162,11 +170,16 @@ WGCNAShiny <- function(id) {
 				 	))
 				 	# Call the network topology analysis function
 				 	sft = reactive({
-				 		pickSoftThreshold(datExpr(),
+				 		pickSoftThreshold(datExpr3(),
 				 						  powerVector = powers,
 				 						  verbose = 5)
-				 	}) %>% bindCache(datExpr(), powers)
-				 	# sft = pickSoftThreshold(datExpr)
+				 	}) %>% bindCache(datExpr3(), powers)
+				 	# sft = pickSoftThreshold(datExpr3)
+				 	
+				 	observe({
+				 		updateSelectInput(session, "power",
+				 						  choices = round(sft()$fitIndices[, 1]), )
+				 	})
 				 	
 				 	# Scale-free topology fit index as a function of the soft-thresholding power
 				 	output$ScaleIndependencePlot <- renderCachedPlot({
@@ -182,19 +195,19 @@ WGCNAShiny <- function(id) {
 				 		)
 				 		
 				 		text(
-				 			sft()$fitIndices[, 1],
-				 			-sign(sft()$fitIndices[, 3]) * sft()$fitIndices[, 2],
+				 			sft()$fitIndices[, 1],-sign(sft()$fitIndices[, 3]) * sft()$fitIndices[, 2],
 				 			labels = powers,
 				 			cex = cex1,
 				 			col = "red"
 				 		)
 				 		
 				 		# this line corresponds to using an R^2 cut-off of h
-				 		abline(h = input$h, col = "red")
+				 		abline(h = (-sign(sft()$fitIndices[, 3]) * sft()$fitIndices[, 2])[which(sft()$fitIndices[, 1] == power())[1]],
+				 			   col = "red")
 				 		
 				 	},
 				 	cacheKeyExpr = {
-				 		list(sft(), powers, input$h)
+				 		list(sft(), power(), powers, input$h)
 				 	})
 				 	
 				 	# Mean connectivity as a function of the soft-thresholding power
@@ -222,11 +235,13 @@ WGCNAShiny <- function(id) {
 				 		list(sft(), powers)
 				 	})
 				 	
-				 	power <- 10
+				 	power <- reactive({
+				 		input$power
+				 	})
 				 	net = reactive({
 				 		blockwiseModules(
-				 			datExpr(),
-				 			power = power,
+				 			datExpr3(),
+				 			power = power(),
 				 			deepSplit = 2,
 				 			TOMType = "unsigned",
 				 			minModuleSize = 10,
@@ -239,7 +254,7 @@ WGCNAShiny <- function(id) {
 				 			verbose = 3
 				 		)
 				 	}) %>%
-				 		bindCache(datExpr(), power, cache = cachem::cache_disk())
+				 		bindCache(datExpr3(), power(), cache = cachem::cache_disk())
 				 	
 				 	# table(net$colors)
 				 	# # open a graphics window
@@ -263,35 +278,54 @@ WGCNAShiny <- function(id) {
 				 	cacheKeyExpr = {
 				 		list(net(), mergedColors())
 				 	})
-				 	# moduleLabels = net$colors
-				 	# moduleColors = labels2colors(net$colors)
-				 	# MEs = net$MEs
-				 	#
-				 	# geneTree = net$dendrograms[[1]]
-				 	#
-				 	#
+				 	
+				 	moduleLabels <- reactive({
+				 		net()$colors
+				 	})
+				 	moduleColors <- reactive({
+				 		labels2colors(net()$colors)
+				 	})
+				 	MEs <- reactive({
+				 		net()$MEs
+				 	})
+				 	
+				 	geneTree <- reactive({
+				 		net()$dendrograms[[1]]
+				 	})
+				 	
+				 	
 				 	# # Define numbers of genes and samples
-				 	# nGenes = ncol(datExpr)
+				 	# nGenes = ncol(datExpr3)
 				 	#
-				 	# nSamples = nrow(datExpr)
+				 	# nSamples = nrow(datExpr3)
 				 	#
 				 	# # Recalculate MEs with color labels
-				 	# MEs0 = moduleEigengenes(datExpr, moduleColors)$eigengenes
+				 	# MEs0 = moduleEigengenes(datExpr3, moduleColors)$eigengenes
 				 	# MEs = orderMEs(MEs0)
-				 	#
-				 	#
-				 	# # Calculate topological overlap anew: this could be done more efficiently by saving the TOM
-				 	# # calculated during module detection, but let us do it again here.
-				 	# dissTOM = 1 - TOMsimilarityFromExpr(datExpr, power = 10)
-				 	#
-				 	# # Transform dissTOM with a power to make moderately strong connections more visible in the heatmap
-				 	# plotTOM = dissTOM ^ 7
-				 	#
+				 	
+				 	
+				 	# Calculate topological overlap anew: this could be done more efficiently by saving the TOM
+				 	# calculated during module detection, but let us do it again here.
+				 	dissTOM <- reactive({
+				 		1 - TOMsimilarityFromExpr(datExpr3(), power = power())
+				 	}) %>%
+				 		bindCache(datExpr3(), power(), cache = cachem::cache_disk())
+
+
+				 	# Transform dissTOM with a power to make moderately strong connections more visible in the heatmap
+				 	plotTOM <- reactive({
+				 		dissTOM() ^ 7
+				 	})
+
 				 	# # Set diagonal to NA for a nicer plot
 				 	# diag(plotTOM) = NA
-				 	#
-				 	# # Call the plot function
-				 	# # sizeGrWindow(9,9)
-				 	# TOMplot(plotTOM, geneTree, moduleColors, main = "Network heatmap plot, all genes")
+
+				 	# Call the plot function
+				 	output$NetworkHeatmapPlot <- renderCachedPlot({
+				 		TOMplot(plotTOM(), geneTree(), moduleColors(), main = "Network heatmap plot, all genes")
+				 	},
+				 	cacheKeyExpr = {
+				 		list(plotTOM(), geneTree(), moduleColors())
+				 	})
 				 })
 }
