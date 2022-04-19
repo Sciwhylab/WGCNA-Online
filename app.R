@@ -1,4 +1,3 @@
-
 library(shiny)
 library(readxl)
 library(DT)
@@ -8,7 +7,9 @@ library(bslib)
 # This sets the application-scoped cache to be a disk
 # cache that can be shared among multiple concurrent R processes, and is
 # deleted when the system reboots.
-shinyOptions(cache = cachem::cache_disk(file.path(dirname(tempdir()), "WGCNA-cache")))
+shinyOptions(cache = cachem::cache_disk(file.path(dirname(tempdir(
+	
+)), "WGCNA-cache")))
 
 path_to_file <-  here::here("RefEx_expression_EST10_human.tsv")
 
@@ -16,18 +17,32 @@ path_to_file <-  here::here("RefEx_expression_EST10_human.tsv")
 Database <- read.delim(path_to_file, row.names = 1)
 
 # Define UI for application
-ui <- fluidPage(
-	# Theme
-	theme = bs_theme(bootswatch = "flatly"),
-	# Favicon
-	tags$head(tags$link(rel="shortcut icon", href=here::here("www","favicon.ico"), type="image/x-icon")),
-	# Application title
-	titlePanel("WGCNA Analysis"),
-	# The data table
-	h2("Dataset"),
-	DTOutput("GeneTable"),
+ui <- fluidPage(# Theme
+	theme = bs_theme(bootswatch = "simplex"),
 	
-	WGCNAShinyUI("1")
+	tags$html(
+		tags$head(
+			tags$meta(charset = "utf-8"),
+			tags$meta(name = "description", content = "A Shiny App to find best practices"),
+			# Favicon
+			tags$link(
+				rel = "shortcut icon",
+				href = here::here("www", "favicon.ico"),
+				type = "image/x-icon"
+			)
+		),
+		
+		tags$body(
+			# Application title
+			titlePanel("WGCNA Analysis"),
+			# The data table
+			h2("Dataset"),
+			DTOutput("GeneTable"),
+			
+			WGCNAShinyUI("1")
+		),
+		lang = "en"
+	)
 )
 
 # Define server logic
