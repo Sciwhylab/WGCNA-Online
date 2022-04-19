@@ -36,7 +36,7 @@ ui <- fluidPage(# Theme
 			# Application title
 			titlePanel("WGCNA Analysis"),
 			# The data table
-			h2("Dataset"),
+			h1("Dataset"),
 			DTOutput("GeneTable"),
 			
 			WGCNAShinyUI("1")
