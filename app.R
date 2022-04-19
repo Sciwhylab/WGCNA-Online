@@ -73,7 +73,8 @@ server <- function(input, output) {
 			# 	leftColumns = 1,
 			# 	heightMatch = 'none'
 			# ),
-			buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+			# buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+			buttons = c('copy', 'csv', 'excel'),
 			dom = 'lfrtiBp'
 		),
 		server = TRUE
