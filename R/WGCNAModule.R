@@ -149,7 +149,9 @@ WGCNAShiny <- function(id) {
 				 		list(sampleTree2(), traitColors(), names(datExpr()))
 				 	})
 				 	
-				 	# datExpr = t(datExpr)
+				 	datExpr <- reactive({
+				 		t(datExpr())
+				 	})
 				 	# nGenes = ncol(datExpr)
 				 	# nSamples = nrow(datExpr)
 				 	
