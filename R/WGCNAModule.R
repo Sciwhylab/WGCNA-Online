@@ -50,20 +50,20 @@ WGCNAShiny <- function(id) {
 				 	# File downloaded from http://refex.dbcls.jp/download.php?lang=en
 				 	path_to_file <-
 				 		here::here("RefEx_expression_EST10_human.tsv")
-				 	datExpr <- read.delim(path_to_file, row.names = 1)
+				 	datExpr1 <- read.delim(path_to_file, row.names = 1)
 				 	# Replace -1 by NA
-				 	datExpr[datExpr == '-1'] <- NA
-				 	# View(datExpr)
-				 	dim(datExpr)
-				 	names(datExpr)
+				 	datExpr1[datExpr1 == '-1'] <- NA
+				 	# View(datExpr1)
+				 	dim(datExpr1)
+				 	names(datExpr1)
 				 	
 				 	
-				 	datExpr <- as.data.frame(lapply(datExpr, as.numeric))
-				 	datExpr <- na.omit(datExpr)
+				 	datExpr1 <- as.data.frame(lapply(datExpr1, as.numeric))
+				 	datExpr1 <- na.omit(datExpr1)
 				 	# Normalization with log2
-				 	datExpr <- log2(datExpr)
+				 	datExpr1 <- log2(datExpr1)
 				 	
-				 	head(datExpr[1:5, 1:5]) # samples in row, genes in column
+				 	# head(datExpr1[1:5, 1:5]) # samples in row, genes in column
 				 	
 				 	
 				 	n = reactive({
@@ -71,12 +71,14 @@ WGCNAShiny <- function(id) {
 				 	})
 				 	
 				 	# datExpr0 <- reactive({
-				 	# 	t(datExpr)[, 1:n()]
+				 	# 	t(datExpr1)[, 1:n()]
 				 	# })
-				 	datExpr0 <- datExpr[1:1000,]
+				 	datExpr0 <- reactive({
+				 		datExpr1[1:n(), ]
+				 	})
 				 	sampleTree <-
 				 		reactive({
-				 			hclust(dist(datExpr0), method = "average")
+				 			hclust(dist(datExpr0()), method = "average")
 				 		})
 				 	
 				 	# sampleTree = hclust(dist(datExpr[1:n(),]), method = "average");
@@ -121,7 +123,7 @@ WGCNAShiny <- function(id) {
 				 		(clust() == 1)
 				 	})
 				 	datExpr <- reactive({
-				 		datExpr0[keepSamples(), ]
+				 		datExpr0()[keepSamples(),]
 				 	})
 				 	# traitColors = numbers2colors(datExpr, signed = FALSE, lim = c(min(datExpr, na.rm = TRUE), max(datExpr, na.rm = TRUE)));
 				 	# Convert traits to a color representation: white means low, red means high, grey means missing entry
@@ -173,7 +175,8 @@ WGCNAShiny <- function(id) {
 				 		par(mfrow = c(1, 2))
 				 		
 				 		plot(
-				 			sft()$fitIndices[, 1],-sign(sft()$fitIndices[, 3]) * sft()$fitIndices[, 2],
+				 			sft()$fitIndices[, 1],
+				 			-sign(sft()$fitIndices[, 3]) * sft()$fitIndices[, 2],
 				 			xlab = "Soft Threshold (power)",
 				 			ylab = "Scale Free Topology Model Fit,signed R^2",
 				 			type = "n",
@@ -181,8 +184,7 @@ WGCNAShiny <- function(id) {
 				 		)
 				 		
 				 		text(
-				 			sft()$fitIndices[, 1],
-				 			-sign(sft()$fitIndices[, 3]) * sft()$fitIndices[, 2],
+				 			sft()$fitIndices[, 1],-sign(sft()$fitIndices[, 3]) * sft()$fitIndices[, 2],
 				 			labels = powers,
 				 			cex = cex1,
 				 			col = "red"
