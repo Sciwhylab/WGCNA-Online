@@ -18,7 +18,7 @@ WGCNAShinyUI <- function(id) {
 		sliderInput(
 			ns("NoOfSamples"),
 			label = "Sample Size",
-			value = 500,
+			value = 1000,
 			min = 100,
 			max = 10000,
 			step = 100,
@@ -53,10 +53,9 @@ WGCNAShiny <- function(id) {
 				 	datExpr1 <- read.delim(path_to_file, row.names = 1)
 				 	# Replace -1 by NA
 				 	datExpr1[datExpr1 == '-1'] <- NA
-				 	# View(datExpr1)
 				 	dim(datExpr1)
 				 	names(datExpr1)
-				 	
+				 	# View(datExpr1)
 				 	
 				 	datExpr1 <- as.data.frame(lapply(datExpr1, as.numeric))
 				 	datExpr1 <- na.omit(datExpr1)
@@ -74,7 +73,7 @@ WGCNAShiny <- function(id) {
 				 	# 	t(datExpr1)[, 1:n()]
 				 	# })
 				 	datExpr0 <- reactive({
-				 		datExpr1[1:n(), ]
+				 		datExpr1[1:n(),]
 				 	})
 				 	sampleTree <-
 				 		reactive({
@@ -123,7 +122,7 @@ WGCNAShiny <- function(id) {
 				 		(clust() == 1)
 				 	})
 				 	datExpr <- reactive({
-				 		datExpr0()[keepSamples(),]
+				 		datExpr0()[keepSamples(), ]
 				 	})
 				 	# traitColors = numbers2colors(datExpr, signed = FALSE, lim = c(min(datExpr, na.rm = TRUE), max(datExpr, na.rm = TRUE)));
 				 	# Convert traits to a color representation: white means low, red means high, grey means missing entry
@@ -166,9 +165,7 @@ WGCNAShiny <- function(id) {
 				 		pickSoftThreshold(datExpr(),
 				 						  powerVector = powers,
 				 						  verbose = 5)
-				 		# }) %>% bindCache({
-				 		# 	list(datExpr(), powers)
-				 	})
+				 	}) %>% bindCache(datExpr(), powers)
 				 	# sft = pickSoftThreshold(datExpr)
 				 	
 				 	# Scale-free topology fit index as a function of the soft-thresholding power
@@ -177,8 +174,7 @@ WGCNAShiny <- function(id) {
 				 		par(mfrow = c(1, 2))
 				 		
 				 		plot(
-				 			sft()$fitIndices[, 1],
-				 			-sign(sft()$fitIndices[, 3]) * sft()$fitIndices[, 2],
+				 			sft()$fitIndices[, 1],-sign(sft()$fitIndices[, 3]) * sft()$fitIndices[, 2],
 				 			xlab = "Soft Threshold (power)",
 				 			ylab = "Scale Free Topology Model Fit,signed R^2",
 				 			type = "n",
@@ -186,7 +182,8 @@ WGCNAShiny <- function(id) {
 				 		)
 				 		
 				 		text(
-				 			sft()$fitIndices[, 1],-sign(sft()$fitIndices[, 3]) * sft()$fitIndices[, 2],
+				 			sft()$fitIndices[, 1],
+				 			-sign(sft()$fitIndices[, 3]) * sft()$fitIndices[, 2],
 				 			labels = powers,
 				 			cex = cex1,
 				 			col = "red"
@@ -225,22 +222,24 @@ WGCNAShiny <- function(id) {
 				 		list(sft(), powers)
 				 	})
 				 	
+				 	power <- 10
 				 	net = reactive({
 				 		blockwiseModules(
 				 			datExpr(),
-				 			power = 4,
-				 			deepSplit = 4,
+				 			power = power,
+				 			deepSplit = 2,
 				 			TOMType = "unsigned",
 				 			minModuleSize = 10,
 				 			reassignThreshold = 0,
-				 			mergeCutHeight = 0.10,
+				 			mergeCutHeight = 0.25,
 				 			numericLabels = TRUE,
 				 			pamRespectsDendro = FALSE,
 				 			# saveTOMs = TRUE,
 				 			# saveTOMFileBase = "humanTOM",
 				 			verbose = 3
 				 		)
-				 	}) %>% bindCache(datExpr(), cache = cachem::cache_disk())
+				 	}) %>%
+				 		bindCache(datExpr(), power, cache = cachem::cache_disk())
 				 	
 				 	# table(net$colors)
 				 	# # open a graphics window
