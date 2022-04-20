@@ -254,7 +254,7 @@ WGCNAShiny <- function(id) {
 				 			verbose = 3
 				 		)
 				 	}) %>%
-				 		bindCache(datExpr3(), power(), cache = cachem::cache_disk())
+				 		bindCache(datExpr3(), power())
 				 	
 				 	# table(net$colors)
 				 	# # open a graphics window
@@ -309,7 +309,7 @@ WGCNAShiny <- function(id) {
 				 	dissTOM <- reactive({
 				 		1 - TOMsimilarityFromExpr(datExpr3(), power = power())
 				 	}) %>%
-				 		bindCache(datExpr3(), power(), cache = cachem::cache_disk())
+				 		bindCache(datExpr3(), power())
 
 
 				 	# Transform dissTOM with a power to make moderately strong connections more visible in the heatmap
