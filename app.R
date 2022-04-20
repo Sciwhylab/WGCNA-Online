@@ -21,7 +21,8 @@ ui <- fluidPage(# Theme
 	tags$html(
 		tags$head(
 			tags$meta(charset = "utf-8"),
-			tags$meta(name = "description", content = "A Shiny App to find best practices"),
+			tags$meta(name = "description", content = "A Shiny App for WGCNA Analysis"),
+			tags$meta(name = "robots", content = "noindex"), # Prevents app from showing up in search results
 			# Favicon
 			tags$link(
 				rel = "shortcut icon",
