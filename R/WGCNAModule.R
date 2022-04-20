@@ -15,6 +15,7 @@ WGCNAShinyUI <- function(id) {
 	
 	tagList(
 		h1("Analysis"),
+		# textOutput(ns("Debug")), # Debugging only
 		sliderInput(
 			ns("NoOfSamples"),
 			label = "Sample Size",
@@ -36,9 +37,11 @@ WGCNAShinyUI <- function(id) {
 		# 	value = 0.1,
 		# 	step = 0.05
 		# ),
-		selectInput(ns("power"),
-					label = "Power for R^2 cut-off",
-					choices = list(1)),
+		selectInput(
+			ns("power"),
+			label = "Power for R^2 cut-off",
+			choices = seq.int(from = 1, to = 30, by = 1)
+		),
 		plotOutput(ns("ScaleIndependencePlot")),
 		plotOutput(ns("MeanConnectivityPlot")),
 		h2("Dendrogram and the Module Colours"),
@@ -179,7 +182,15 @@ WGCNAShiny <- function(id) {
 				 	observe({
 				 		updateSelectInput(session, "power",
 				 						  choices = round(sft()$fitIndices[, 1]), )
+				 		# choices = seq.int(from = 1, to = 30, by = 1))
 				 	})
+				 	
+				 	# bindEvent({ # Debugging only
+				 	# 	output$Debug <- renderText({
+				 	# 		paste(power(), typeof(power()))
+				 	# 	})
+				 	# },
+				 	# input$power)
 				 	
 				 	# Scale-free topology fit index as a function of the soft-thresholding power
 				 	output$ScaleIndependencePlot <- renderCachedPlot({
@@ -236,7 +247,7 @@ WGCNAShiny <- function(id) {
 				 	})
 				 	
 				 	power <- reactive({
-				 		input$power
+				 		as.double(input$power)
 				 	})
 				 	net = reactive({
 				 		blockwiseModules(
@@ -310,16 +321,16 @@ WGCNAShiny <- function(id) {
 				 		1 - TOMsimilarityFromExpr(datExpr3(), power = power())
 				 	}) %>%
 				 		bindCache(datExpr3(), power())
-
-
+				 	
+				 	
 				 	# Transform dissTOM with a power to make moderately strong connections more visible in the heatmap
 				 	plotTOM <- reactive({
 				 		dissTOM() ^ 7
 				 	})
-
+				 	
 				 	# # Set diagonal to NA for a nicer plot
 				 	# diag(plotTOM) = NA
-
+				 	
 				 	# Call the plot function
 				 	output$NetworkHeatmapPlot <- renderCachedPlot({
 				 		TOMplot(plotTOM(), geneTree(), moduleColors(), main = "Network heatmap plot, all genes")
