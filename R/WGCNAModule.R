@@ -19,9 +19,9 @@ WGCNAShinyUI <- function(id) {
 		h1("Analysis"),
 		# textOutput(ns("Debug")), # Debugging only
 		HTML(
-			"<p>Sample data is <a href='http://refex.dbcls.jp/download.php?lang=en'>Processed expression data of 10 major tissues for EST human</a>.</p>"
+			"<p>Sample data is <a href='https://figshare.com/articles/dataset/RefEx_expression_EST10_human_tsv_zip/4028625'>Processed expression data of 10 major tissues for EST human</a>.</p>"
 		),
-		actionButton(ns("useSample"), label = "Use Sample Data",),
+		actionButton(ns("useSample"), label = "Use Sample Data", ),
 		
 		fileInput(
 			ns("uploaded"),
