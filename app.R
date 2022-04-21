@@ -46,8 +46,9 @@ ui <- fluidPage(# Theme
 
 # Define server logic
 server <- function(input, output) {
+	Database <- WGCNAShiny("1")
 	output$GeneTable <- renderDT(
-		Database,
+		Database(),
 		extensions = c("FixedColumns", "Buttons"),
 		rownames = FALSE,
 		options = list(
@@ -78,7 +79,6 @@ server <- function(input, output) {
 		),
 		server = TRUE
 	)
-	WGCNAShiny("1")
 }
 
 # Run the application

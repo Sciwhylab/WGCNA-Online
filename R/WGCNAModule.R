@@ -10,12 +10,37 @@ options(stringsAsFactors = FALSE)
 
 enableWGCNAThreads()
 
+options(shiny.maxRequestSize = 50 * 1024 ^ 2) # Allow files uploads up to 50 MB
+
 WGCNAShinyUI <- function(id) {
 	ns <- NS(id)
 	
 	tagList(
 		h1("Analysis"),
 		# textOutput(ns("Debug")), # Debugging only
+		HTML(
+			"<p>Sample data is <a href='http://refex.dbcls.jp/download.php?lang=en'>Processed expression data of 10 major tissues for EST human</a>.</p>"
+		),
+		actionButton(ns("useSample"), label = "Use Sample Data",),
+		
+		fileInput(
+			ns("uploaded"),
+			label = "Upload a file here",
+			multiple = FALSE,
+			accept = c(".csv", ".tsv", ".xlsx", ".xls")
+		),
+		checkboxGroupInput(
+			ns("uploadOptions"),
+			label = "Options for the Uploaded File",
+			choices = c(
+				"Contains Column Names" = "col_names",
+				"Contains Row Names" = "row_names",
+				"Interpret -1 as NA" = "m1toNA",
+				"Normalization with log2" = "norm_log2"
+			)
+		),
+		actionButton(ns("useUploaded"), label = "Use My Data"),
+		
 		sliderInput(
 			ns("NoOfSamples"),
 			label = "Sample Size",
@@ -54,24 +79,83 @@ WGCNAShinyUI <- function(id) {
 WGCNAShiny <- function(id) {
 	moduleServer(id,
 				 function(input, output, session) {
-				 	# Load the data from the file
+				 	# Load the data from the sample file
 				 	# File downloaded from http://refex.dbcls.jp/download.php?lang=en
-				 	path_to_file <-
-				 		here::here("RefEx_expression_EST10_human.tsv")
-				 	datExpr1 <- read.delim(path_to_file, row.names = 1)
+				 	path_to_file <- here::here("RefEx_expression_EST10_human.tsv")
+				 	sampleData <- read.delim(path_to_file, row.names = 1)
 				 	# Replace -1 by NA
-				 	datExpr1[datExpr1 == '-1'] <- NA
-				 	# dim(datExpr1)
-				 	# names(datExpr1)
-				 	# View(datExpr1)
+				 	sampleData[sampleData == '-1'] <- NA
+				 	# dim(sampleData)
+				 	# names(sampleData)
+				 	# View(sampleData)
 				 	
-				 	datExpr1 <- as.data.frame(lapply(datExpr1, as.numeric))
-				 	datExpr1 <- na.omit(datExpr1)
+				 	sampleData <- as.data.frame(lapply(sampleData, as.numeric))
+				 	sampleData <- na.omit(sampleData)
 				 	# Normalization with log2
-				 	datExpr1 <- log2(datExpr1)
+				 	sampleData <- log2(sampleData)
 				 	
+				 	reactives <- reactiveValues(uploaded_data = NULL)
+				 	# uploaded_data <- NULL
 				 	# head(datExpr1[1:5, 1:5]) # samples in row, genes in column
 				 	
+				 	bindEvent(observe({
+				 		reactives$uploaded_data <- NULL
+				 	}),
+				 	input$useSample)
+				 	
+				 	bindEvent(observe({
+				 		file <- isolate(input$uploaded)
+				 		ext <- tools::file_ext(file$datapath)
+				 		
+				 		req(file)
+				 		uploadOptions <- isolate(input$uploadOptions)
+				 		col_names <- "col_names" %in% uploadOptions
+				 		if (ext == "csv")
+				 		{
+				 			reactives$uploaded_data <-
+				 				readr::read_csv(file$datapath, col_names = col_names)
+				 		} else if (ext == "tsv") {
+				 			reactives$uploaded_data <-
+				 				readr::read_tsv(file$datapath, col_names = col_names)
+				 		} else if (ext == "xls") {
+				 			reactives$uploaded_data <-
+				 				readxl::read_xls(file$datapath, col_names = col_names)
+				 		} else if (ext == "xlsx") {
+				 			
+				 		} else{
+				 			validate(need(FALSE, "File format is not supported."))
+				 		}
+				 		
+				 		if ("row_names" %in% uploadOptions)
+				 			reactives$uploaded_data <- reactives$uploaded_data[,-1]
+				 		
+				 		if ("m1toNA" %in% uploadOptions)
+				 			# Replace -1 by NA
+				 			reactives$uploaded_data[reactives$uploaded_data == '-1'] <-
+				 			NA
+				 		
+				 		uploaded_data <-
+				 			lapply(reactives$uploaded_data, as.numeric) %>%
+				 			as.data.frame() %>%
+				 			na.omit()
+				 		
+				 		if ("norm_log2" %in% uploadOptions)
+				 			# Normalization with log2
+				 			reactives$uploaded_data <- log2(reactives$uploaded_data)
+				 		
+				 		output$Debug <- renderText({
+				 			file$datapath
+				 		})
+				 		
+				 	}),
+				 	input$useUploaded)
+				 	
+				 	datExpr1 <- reactive({
+				 		if (is.null(reactives$uploaded_data))
+				 			sampleData
+				 		else
+				 			reactives$uploaded_data
+				 	})
 				 	
 				 	n = reactive({
 				 		input$NoOfSamples
@@ -81,7 +165,7 @@ WGCNAShiny <- function(id) {
 				 	# 	t(datExpr1)[, 1:n()]
 				 	# })
 				 	datExpr0 <- reactive({
-				 		datExpr1[1:n(),]
+				 		datExpr1()[1:n(), ]
 				 	})
 				 	sampleTree <-
 				 		reactive({
@@ -338,5 +422,6 @@ WGCNAShiny <- function(id) {
 				 	cacheKeyExpr = {
 				 		list(plotTOM(), geneTree(), moduleColors())
 				 	})
+				 	return(datExpr1)
 				 })
 }
