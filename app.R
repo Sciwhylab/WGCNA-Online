@@ -44,7 +44,10 @@ ui <- fluidPage(# Theme
 					a("weighted gene co-expression network analysis", href = "https://en.wikipedia.org/wiki/Weighted_correlation_network_analysis"),
 					"on their data."
 				),
-				p("To know more, take a look at the example below."),
+				p(
+					"To know more, take a look at the example below. Sample data was obtained from ",
+					a("RefEx.", href = "http://refex.dbcls.jp/download.php?lang=en")
+				),
 				p(
 					"It uses the R package ",
 					a("WGCNA.", href = "https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/"),
@@ -77,7 +80,7 @@ server <- function(input, output) {
 			autoWidth = TRUE,
 			paging = TRUE,
 			lengthMenu = matrix(
-				c(10, 25, 50,-1, 10, 25, 50, "All"),
+				c(10, 25, 50, -1, 10, 25, 50, "All"),
 				ncol = 4,
 				nrow = 2,
 				byrow = TRUE
