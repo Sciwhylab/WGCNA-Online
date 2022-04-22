@@ -1,15 +1,11 @@
 library(shiny)
-library(readxl)
 library(DT)
-library(bslib)
 # library(dplyr)
 
 # This sets the application-scoped cache to be a disk
 # cache that can be shared among multiple concurrent R processes, and is
 # deleted when the system reboots.
-shinyOptions(cache = cachem::cache_disk(file.path(dirname(tempdir(
-	
-)), "WGCNA-cache")))
+shinyOptions(cache = cachem::cache_disk(file.path(dirname(tempdir()), "WGCNA-cache")))
 
 path_to_file <-  here::here("RefEx_expression_EST10_human.tsv")
 
@@ -18,7 +14,7 @@ Database <- read.delim(path_to_file, row.names = 1)
 
 # Define UI for application
 ui <- fluidPage(# Theme
-	theme = bs_theme(bootswatch = "simplex"),
+	theme = bslib::bs_theme(bootswatch = "simplex"),
 	
 	tags$html(
 		tags$head(
