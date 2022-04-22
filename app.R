@@ -1,4 +1,5 @@
 library(shiny)
+library(bslib)
 library(DT)
 # library(dplyr)
 
@@ -12,9 +13,27 @@ path_to_file <-  here::here("RefEx_expression_EST10_human.tsv")
 # Load the data from the file
 Database <- read.delim(path_to_file, row.names = 1)
 
+light <- bs_theme(bootswatch = "simplex")
+dark <- bs_theme(
+			bootswatch = "simplex",
+			bg = "#292929",
+			fg = "grey",
+			primary = "crimson",
+			secondary = "coral"
+		)
+# dark <- bs_theme(bootswatch = "simplex", bg = "#204020", fg = "royalblue", primary = "turquoise", secondary = "teal")
+
 # Define UI for application
-ui <- fluidPage(# Theme
-	theme = bslib::bs_theme(bootswatch = "simplex"),
+ui <- fluidPage(
+	# Theme
+	theme = light,
+	
+	shinyWidgets::switchInput(
+		inputId = "dark_mode",
+		value = FALSE,
+		onLabel = "Dark",
+		offLabel = "Light"
+	),
 	
 	tags$html(
 		tags$head(
@@ -61,10 +80,17 @@ ui <- fluidPage(# Theme
 			WGCNAShinyUI("1")
 		),
 		lang = "en"
-	))
+	)
+)
 
 # Define server logic
-server <- function(input, output) {
+server <- function(input, output, session) {
+	observe(session$setCurrentTheme(
+		if (input$dark_mode)
+			dark
+		else
+			light)
+		)
 	Database <- WGCNAShiny("1")
 	output$GeneTable <- renderDT(
 		Database(),
