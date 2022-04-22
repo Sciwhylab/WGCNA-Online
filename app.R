@@ -101,6 +101,9 @@ server <- function(input, output) {
 }
 
 # Run the application
-runApp(shinyApp(ui = ui, server = server),
-	   host = "0.0.0.0",
-	   port = 4330)
+# Local Only
+# runApp(shinyApp(ui = ui, server = server),
+# 	   host = "0.0.0.0",
+# 	   port = 4330)
+# Universal
+shinyApp(ui = ui, server = server)
