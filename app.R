@@ -44,7 +44,7 @@ ui <- fluidPage(
 			# Favicon
 			tags$link(
 				rel = "shortcut icon",
-				href = here::here("www", "favicon.ico"),
+				href = "favicon.png",
 				type = "image/x-icon"
 			)
 		),
