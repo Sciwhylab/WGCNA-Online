@@ -5,7 +5,7 @@ output:
 ---
 
 
-```{r}
+```{r setup}
 # Setting up the env
 library(WGCNA)
 library(impute)
