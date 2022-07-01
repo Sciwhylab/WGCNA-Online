@@ -158,7 +158,7 @@ WGCNAShiny <- function(id) {
 				 	})
 				 	
 				 	n = reactive({
-				 		input$NoOfSamples
+				 		min(input$NoOfSamples, nrow(datExpr1()))
 				 	})
 				 	
 				 	# datExpr0 <- reactive({
