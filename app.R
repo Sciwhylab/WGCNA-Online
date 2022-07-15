@@ -92,7 +92,7 @@ server <- function(input, output, session) {
 			light)
 		)
 	Database <- DataManager("1")
-	WGCNAShiny("1")
+	WGCNAShiny("1", Database)
 	output$GeneTable <- renderDT(
 		Database(),
 		extensions = c("FixedColumns", "Buttons"),
