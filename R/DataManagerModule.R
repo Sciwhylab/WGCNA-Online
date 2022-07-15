@@ -1,14 +1,16 @@
 library(shiny)
 
+# Setting up the env
 options(stringsAsFactors = FALSE)
 
 options(shiny.maxRequestSize = 50 * 1024 ^ 2) # Allow files uploads up to 50 MB
+options(error=recover)
 
 DataManagerUI <- function(id) {
 	ns <- NS(id)
 	
 	tagList(
-		h1("DataSet"),
+		h2("Data Source"),
 		# textOutput(ns("Debug")), # Debugging only
 		HTML(
 			"<p>Sample data is <a href='https://figshare.com/articles/dataset/RefEx_expression_EST10_human_tsv_zip/4028625'>Processed expression data of 10 major tissues for EST human</a>.</p>"
@@ -31,7 +33,7 @@ DataManagerUI <- function(id) {
 				"Normalization with log2" = "norm_log2"
 			)
 		),
-		actionButton(ns("useUploaded"), label = "Use My Data"),
+		actionButton(ns("useUploaded"), label = "Use My Data")
 	)
 }
 
