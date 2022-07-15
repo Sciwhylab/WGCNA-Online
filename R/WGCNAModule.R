@@ -52,9 +52,9 @@ WGCNAShinyUI <- function(id) {
 	)
 }
 
-WGCNAShiny <- function(id) {
+WGCNAShiny <- function(id, Dataset) {
 	moduleServer(id,
-				 function(input, output, session, datExpr1) {
+				 function(input, output, session, datExpr1=Dataset) {
 				 	
 				 	n = reactive({
 				 		input$NoOfSamples
