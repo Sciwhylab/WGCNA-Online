@@ -39,8 +39,7 @@ ui <- fluidPage(
 		tags$head(
 			tags$meta(charset = "utf-8"),
 			tags$meta(name = "description", content = "A Shiny App for WGCNA Analysis"),
-			tags$meta(name = "robots", content = "noindex"),
-			# Prevents app from showing up in search results
+			tags$meta(name = "robots", content = "noindex"), # Prevents app from showing up in search results, remove on publish
 			# Favicon
 			tags$link(
 				rel = "shortcut icon",
@@ -73,10 +72,11 @@ ui <- fluidPage(
 					a("Shiny Application.", href = "https://shiny.rstudio.com/")
 				)
 			),
-			# The data table
-			h1("Dataset"),
-			DTOutput("GeneTable"),
 			
+			DataManagerUI("1"),
+			# The data table
+			h1("Data Viewer"),
+			DTOutput("GeneTable"),
 			WGCNAShinyUI("1")
 		),
 		lang = "en"
@@ -91,7 +91,8 @@ server <- function(input, output, session) {
 		else
 			light)
 		)
-	Database <- WGCNAShiny("1")
+	Database <- DataManager("1")
+	WGCNAShiny("1", Database)
 	output$GeneTable <- renderDT(
 		Database(),
 		extensions = c("FixedColumns", "Buttons"),
