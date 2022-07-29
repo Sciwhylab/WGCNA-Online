@@ -15,7 +15,7 @@ DataManagerUI <- function(id) {
 		HTML(
 			"<p>Sample data is <a href='https://figshare.com/articles/dataset/RefEx_expression_EST10_human_tsv_zip/4028625'>Processed expression data of 10 major tissues for EST human</a>.</p>"
 		),
-		actionButton(ns("useSample"), label = "Use Sample Data", ),
+		actionButton(ns("useSample"), label = "Use Sample Data"),
 		
 		fileInput(
 			ns("uploaded"),
@@ -95,10 +95,10 @@ DataManager <- function(id) {
 				 			reactives$uploaded_data[reactives$uploaded_data == '-1'] <-
 				 			NA
 				 		
-				 		uploaded_data <-
-				 			lapply(reactives$uploaded_data, as.numeric) %>%
-				 			as.data.frame() %>%
-				 			na.omit()
+				 		reactives$uploaded_data <-
+				 			lapply(reactives$uploaded_data, as.numeric) %>% 
+				 			as.data.frame()
+				 		
 				 		# message(all.equal(sampleData,isolate(reactives$uploaded_data)))
 				 		tryCatch({
 				 			gsg = goodSamplesGenes(reactives$uploaded_data, verbose = 3);
