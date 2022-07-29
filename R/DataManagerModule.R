@@ -99,6 +99,26 @@ DataManager <- function(id) {
 				 			lapply(reactives$uploaded_data, as.numeric) %>%
 				 			as.data.frame() %>%
 				 			na.omit()
+				 		# message(all.equal(sampleData,isolate(reactives$uploaded_data)))
+				 		tryCatch({
+				 			gsg = goodSamplesGenes(reactives$uploaded_data, verbose = 3);
+				 			gsg$allOK
+				 			if (!gsg$allOK)
+				 			{
+				 				# Optionally, print the gene and sample names that were removed:
+				 				if (sum(!gsg$goodGenes)>0)
+				 					printFlush(paste("Removing genes:", paste(names(reactives$uploaded_data)[!gsg$goodGenes], collapse = ", ")));
+				 				if (sum(!gsg$goodSamples)>0)
+				 					printFlush(paste("Removing samples:", paste(rownames(reactives$uploaded_data)[!gsg$goodSamples], collapse = ", ")));
+				 				# Remove the offending genes and samples from the data:
+				 				reactives$uploaded_data = reactives$uploaded_data[gsg$goodSamples, gsg$goodGenes]
+				 			}
+				 		},
+				 		error = function(e) {
+				 			message("Warning: Could not get good genes. Proceeding with NA removal.")
+				 			reactives$uploaded_data <- reactives$uploaded_data %>% na.omit()
+				 		})
+				 		# message("Reached this")
 				 		
 				 		if ("norm_log2" %in% uploadOptions)
 				 			# Normalization with log2
