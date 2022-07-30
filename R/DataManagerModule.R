@@ -33,6 +33,10 @@ DataManagerUI <- function(id) {
 				"Normalization with log2" = "norm_log2"
 			)
 		),
+		pre(
+			"Different datasets require different treatment. It is recommended that you process your data before uploading it. After all, you know your data the best.",
+			class="alert alert-warning"
+		),
 		actionButton(ns("useUploaded"), label = "Use My Data")
 	)
 }
