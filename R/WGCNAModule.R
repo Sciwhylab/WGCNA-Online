@@ -43,12 +43,12 @@ WGCNAShinyUI <- function(id) {
 			label = "Power for R^2 cut-off",
 			choices = seq.int(from = 1, to = 30, by = 1)
 		),
-		plotOutput(ns("ScaleIndependencePlot")),
-		plotOutput(ns("MeanConnectivityPlot")),
+		plotOutput(ns("ScaleIndependencePlot"), width = "100%", height = "600px"),
+		plotOutput(ns("MeanConnectivityPlot"), width = "100%", height = "600px"),
 		h2("Dendrogram and the Module Colours"),
-		plotOutput(ns("ColouredDendrogramPlot")),
+		plotOutput(ns("ColouredDendrogramPlot"), width = "100%", height = "600px"),
 		h2("Network heatmap plot, all genes"),
-		plotOutput(ns("NetworkHeatmapPlot"))
+		plotOutput(ns("NetworkHeatmapPlot"), width = "100%", height = "900px")
 	)
 }
 
