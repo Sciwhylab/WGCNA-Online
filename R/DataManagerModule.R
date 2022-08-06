@@ -46,7 +46,7 @@ DataManager <- function(id) {
 				 function(input, output, session) {
 				 	# Load the data from the sample file
 				 	# File downloaded from http://refex.dbcls.jp/download.php?lang=en
-				 	path_to_file <- here::here("RefEx_expression_EST10_human.tsv")
+				 	path_to_file <- here::here("sample_datasets/RefEx_expression_EST10_human.tsv")
 				 	sampleData <- read.delim(path_to_file, row.names = 1)
 				 	# Replace -1 by NA
 				 	sampleData[sampleData == '-1'] <- NA

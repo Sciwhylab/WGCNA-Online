@@ -8,11 +8,6 @@ library(DT)
 # deleted when the system reboots.
 shinyOptions(cache = cachem::cache_disk(file.path(dirname(tempdir()), "WGCNA-cache")))
 
-path_to_file <-  here::here("RefEx_expression_EST10_human.tsv")
-
-# Load the data from the file
-Database <- read.delim(path_to_file, row.names = 1)
-
 light <- bs_theme(bootswatch = "simplex")
 dark <- bs_theme(
 			bootswatch = "simplex",
