@@ -4,8 +4,8 @@ library(shiny)
 
 # Setting up the env
 library(WGCNA)
-library(impute)
-library(flashClust)
+# library(impute)
+# library(flashClust)
 options(stringsAsFactors = FALSE)
 
 enableWGCNAThreads()
