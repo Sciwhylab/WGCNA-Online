@@ -1,5 +1,15 @@
 # WGCNA Online
 
+An online application that lets users perform weighted gene co-expression network analysis on their data –  
+a no-code solution that helps you quickly get started and explore.
+
+This project aims to create a GUI interface to the [R WGCNA package](https://www.rdocumentation.org/packages/WGCNA/versions/1.71).
+
+## Live version
+
+A [hosted version](https://kitswas.shinyapps.io/WGCNA-Online/) is available.  
+Note that it is _resource-limited._
+
 ## Getting started
 
 ### Prerequisites
@@ -34,4 +44,12 @@ Then, go to the project root and execute the following in R.
 
 ```r
 shiny::runApp(, host = "0.0.0.0")
+```
+
+## Troubleshooting
+
+If you are facing package installation problems while deploying the app to [shinyapps.io](https://www.shinyapps.io/), execute the following in R.
+
+```r
+options(repos = c(getOption("repos"),  BiocManager::repositories()))
 ```
