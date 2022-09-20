@@ -12,7 +12,7 @@ light <- bs_theme(bootswatch = "simplex")
 dark <- bs_theme(
 			bootswatch = "simplex",
 			bg = "#292929",
-			fg = "grey",
+			fg = "#999999",
 			primary = "crimson",
 			secondary = "coral"
 		)
