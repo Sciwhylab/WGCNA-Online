@@ -34,7 +34,6 @@ ui <- fluidPage(
 		tags$head(
 			tags$meta(charset = "utf-8"),
 			tags$meta(name = "description", content = "A Shiny App for WGCNA Analysis"),
-			tags$meta(name = "robots", content = "noindex"), # Prevents app from showing up in search results, remove on publish
 			# Favicon
 			tags$link(
 				rel = "shortcut icon",
@@ -63,8 +62,8 @@ ui <- fluidPage(
 					"A choice has been provided to the user in some cases. All other parameters have been left to their recommended defaults. "
 				),
 				p(
-					"This is a ",
-					a("Shiny Application.", href = "https://shiny.rstudio.com/")
+					"This project is open-source. The source code is available on ",
+					a("GitHub.", href = "https://github.com/Sciwhylab/WGCNA-Online")
 				)
 			),
 			
@@ -123,9 +122,9 @@ server <- function(input, output, session) {
 }
 
 # Run the application
-# Local Only
+## Local Only
 # runApp(shinyApp(ui = ui, server = server),
 # 	   host = "0.0.0.0",
 # 	   port = 4330)
-# Universal
+## Universal
 shinyApp(ui = ui, server = server)
