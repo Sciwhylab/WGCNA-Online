@@ -27,7 +27,7 @@ ui <- fluidPage(
 	tags$html(
 		tags$head(
 			tags$meta(charset = "utf-8"),
-			tags$meta(name = "description", content = "A Shiny App for WGCNA Analysis"),
+			tags$meta(name = "description", content = "A Free and Open Source app for online WGCNA Analysis"),
 			# Favicon
 			tags$link(
 				rel = "shortcut icon",
