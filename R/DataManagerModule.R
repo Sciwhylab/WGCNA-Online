@@ -34,7 +34,7 @@ DataManagerUI <- function(id) {
 			)
 		),
 		pre(
-			"Different datasets require different treatment. It is recommended that you process your data before uploading it. After all, you know your data the best.",
+			"⚠️ Different datasets require different treatment. It is recommended that you process your data before uploading it. After all, you know your data the best.",
 			class="alert alert-warning"
 		),
 		actionButton(ns("useUploaded"), label = "Use My Data")

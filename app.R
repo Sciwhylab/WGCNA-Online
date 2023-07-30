@@ -71,6 +71,10 @@ ui <- fluidPage(
 				p(
 					"This project is open-source. The source code is available on ",
 					a("GitHub.", href = "https://github.com/Sciwhylab/WGCNA-Online")
+				),
+				pre(
+					"ℹ This site is best viewed on large-screen devices.",
+					class="alert alert-info"
 				)
 			),
 			
