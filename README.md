@@ -7,8 +7,8 @@ This project aims to create a GUI interface to the [R WGCNA package](https://www
 
 ## Live version
 
-A [hosted version](https://kitswas.shinyapps.io/WGCNA-Online/) is available.  
-Note that it is _resource-limited._
+A [hosted version](https://kitswas.shinyapps.io/WGCNA-Online/) is available on shinyapps.io. Note that it is _resource-limited._  
+The app sleeps to save resources when idle, leading to longer startup times. Please be patient.
 
 ## Getting started
 
