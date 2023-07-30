@@ -28,7 +28,7 @@ cd WGCNA-Online
 In R, execute the following commands:
 
 ```r
-install.packages(c("shiny", "bslib", "BiocManager", "DT"))
+install.packages(c("shiny", "shinyWidgets", "stats", "bslib", "BiocManager", "DT", "here", "readr", "readxl"))
 ```
 
 ```r
