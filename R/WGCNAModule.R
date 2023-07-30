@@ -14,7 +14,7 @@ WGCNAShinyUI <- function(id) {
 	ns <- NS(id)
 	
 	tagList(
-		h1("Analysis"),
+		h2("Analysis"),
 		
 		sliderInput(
 			ns("NoOfSamples"),
@@ -26,12 +26,12 @@ WGCNAShinyUI <- function(id) {
 			width = "100%"
 		),
 		
-		h2("Outlier Detection"),
+		h3("Outlier Detection"),
 		numericInput(ns("cutHeight"), label = "Cut Height", value = 10),
 		plotOutput(ns("OutlierDetectionPlot")),
-		h2("Sample dendrogram and trait heatmap"),
+		h3("Sample dendrogram and trait heatmap"),
 		plotOutput(ns("DendroAndColorsPlot")),
-		h2("Soft-thresholding"),
+		h3("Soft-thresholding"),
 		# numericInput(
 		# 	ns("h"),
 		# 	label = "h for R^2 cut-off",
@@ -45,9 +45,9 @@ WGCNAShinyUI <- function(id) {
 		),
 		plotOutput(ns("ScaleIndependencePlot"), width = "100%", height = "600px"),
 		plotOutput(ns("MeanConnectivityPlot"), width = "100%", height = "600px"),
-		h2("Dendrogram and the Module Colours"),
+		h3("Dendrogram and the Module Colours"),
 		plotOutput(ns("ColouredDendrogramPlot"), width = "100%", height = "600px"),
-		h2("Network heatmap plot, all genes"),
+		h3("Network heatmap plot, all genes"),
 		plotOutput(ns("NetworkHeatmapPlot"), width = "100%", height = "900px")
 	)
 }

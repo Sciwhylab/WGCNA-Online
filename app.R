@@ -22,13 +22,7 @@ dark <- bs_theme(
 ui <- fluidPage(
 	# Theme
 	theme = light,
-	
-	shinyWidgets::switchInput(
-		inputId = "dark_mode",
-		value = FALSE,
-		onLabel = "Dark",
-		offLabel = "Light"
-	),
+	title = "WGCNA Analysis Online",
 	
 	tags$html(
 		tags$head(
@@ -43,9 +37,22 @@ ui <- fluidPage(
 		),
 		
 		tags$body(
-			# Application title
-			titlePanel("WGCNA Analysis"),
-			h1("About"),
+			fluidRow(
+				column(width = 10,
+					h1("WGCNA Analysis Online")
+				),
+				column(width = 2,
+					shinyWidgets::switchInput(
+						inputId = "dark_mode",
+						value = FALSE,
+						onLabel = "Dark",
+						offLabel = "Light",
+						inline = TRUE
+					)
+				),
+			),
+
+			h2("About"),
 			div(
 				p(
 					"This is an online application that lets users perform",
@@ -69,7 +76,7 @@ ui <- fluidPage(
 			
 			DataManagerUI("1"),
 			# The data table
-			h1("Data Viewer"),
+			h2("Data Viewer"),
 			DTOutput("GeneTable"),
 			WGCNAShinyUI("1")
 		),
