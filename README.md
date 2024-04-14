@@ -48,7 +48,7 @@ shiny::runApp(, host = "0.0.0.0")
 
 ## Using the Dockerfile
 
-If you have [Docker](https://www.docker.com/products/docker-desktop) installed, you can build and run the app using the provided Dockerfile.
+If you have [Docker](https://docs.docker.com/get-docker/) installed, you can build, run and deploy the app using the provided Dockerfile.
 
 You can build the image using the following command:
 
