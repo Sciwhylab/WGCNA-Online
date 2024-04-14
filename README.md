@@ -46,6 +46,25 @@ Then, go to the project root and execute the following in R.
 shiny::runApp(, host = "0.0.0.0")
 ```
 
+## Using the Dockerfile
+
+If you have [Docker](https://www.docker.com/products/docker-desktop) installed, you can build and run the app using the provided Dockerfile.
+
+You can build the image using the following command:
+
+```bash
+docker build -t wgcna-online .
+```
+
+And run the container using: (replace `8080` with the port you want to use)
+
+```bash
+docker run --name "wgcna" --rm -p 8080:3838 wgcna-online
+```
+
+Visit [http://localhost:8080](http://localhost:8080) to access the app.  
+If you are using a server, replace `localhost` with the server's IP address.
+
 ## Troubleshooting
 
 If you are facing package installation problems while deploying the app to [shinyapps.io](https://www.shinyapps.io/), execute the following in R.
